@@ -1,0 +1,49 @@
+5 stari
+7 tranzitii
+Tranzitiile: 
+0 1 a
+0 2 $
+1 0 a
+2 4 a
+2 3 b
+3 2 b
+4 2 b
+Stare initiala: 0
+1 stari finale:
+2 
+
+
+5 stari
+8 tranzitii
+Tranzitiile: 
+0 4 a
+0 1 a
+0 3 b
+1 0 a
+2 4 a
+2 3 b
+3 2 b
+4 2 b
+Stare initiala: 0
+2 stari finale:
+0 
+2 
+
+
+5 stari
+8 tranzitii
+Tranzitiile: 
+0 1 a
+0 2 b
+1 0 a
+1 3 b
+2 3 b
+3 4 a
+3 2 b
+4 3 b
+Stare initiala: 0
+2 stari finale:
+3 
+0 
+
+
