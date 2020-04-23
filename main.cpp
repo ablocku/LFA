@@ -133,7 +133,7 @@ void NFA_DFA(){
 
     queue < vector <int> > q;
     vector <int> top, temp;
-    unordered_set <int> set_temp;
+    unordered_set <int> set_temp; //pt a verifica daca am vizitat sau nu o stare
     q.push({stareInit});
 
     while(!q.empty())
@@ -229,10 +229,9 @@ void DFA_DFAmin()
 {
     int nr_stari_nou = 0, nr_tranzitii_nou = 0;
     unordered_set <int> stariFin_nou;
-    vector <nod> G_nou;
+    vector <nod> G_nou, Gfnd(nr_stari);
 
     //Retinem nodurile "fundatura"
-    vector <nod> Gfnd;
     for(int i = 0; i < nr_stari; ++i)
         for(int litera = 0; litera < 27; ++litera)
             for(auto& urm : G[i].T[litera])
@@ -256,7 +255,6 @@ void DFA_DFAmin()
                     q.push(urm);
                 }
     }
-
     //Retin starile din care nu ajung in stare finala
     for(auto& fin: stariFin)
     {
@@ -276,7 +274,6 @@ void DFA_DFAmin()
                     q.push(urm);
                 }
     }
-
     //Verificam daca mai avem stari in dfa-minimal
     bool nul = false;
     if(viz2.find(stareInit) == viz2.end())
@@ -315,17 +312,22 @@ void DFA_DFAmin()
 
     G_nou.resize(nr_stari_nou);
     for(int i = 0; i < nr_stari; ++i)
-        if(stare_noua[i] != -1) //daca nu a fost eliminat
         {
-            if(stariFin.find(i) != stariFin.end())
-                stariFin_nou.emplace(i);
-            for(int litera = 0; litera < 27; ++litera)
-                for(auto& urm : G[i].T[litera])
-                    if(stare_noua[urm] != -1) //daca nu a fost eliminata
-                    {
-                        ++nr_tranzitii_nou;
-                        G_nou[stare_noua[i]].T[litera].emplace(stare_noua[urm]); //adaug noua tranzitie
-                    }
+        if(stare_noua[i] == -1)
+            continue; //stare eliminata
+
+        if(stariFin.find(i) != stariFin.end())
+            stariFin_nou.emplace(i);
+
+        for(int litera = 0; litera < 27; ++litera)
+            for(auto& urm : G[i].T[litera])
+                {
+                if(stare_noua[urm] == -1)
+                    continue; //la fel ca mai sus
+
+                ++nr_tranzitii_nou;
+                G_nou[stare_noua[i]].T[litera].emplace(stare_noua[urm]); //adaug noua tranzitie
+                }
         }
 
     nr_stari = nr_stari_nou;
@@ -338,15 +340,16 @@ void DFA_DFAmin()
     G.clear();
     G = G_nou;
     G_nou.clear();
+    nr_tranzitii_nou = nr_stari_nou = 0;
 
     //Marchez perechile de noduri echivalente
     set < pair <int,int> > check;
     for(int i = 0; i < nr_stari ; ++i)
-        for(int j = i + 1; j < nr_stari; ++i)
+        for(int j = i + 1; j < nr_stari; ++j)
         {
             bool x = (bool)(stariFin.find(i) != stariFin.end());
             bool y = (bool)(stariFin.find(j) != stariFin.end());
-            if(x && y)
+            if(!(x ^ y))
                 check.emplace(make_pair(i,j));
         }
 
@@ -376,7 +379,6 @@ void DFA_DFAmin()
             check.erase(i);
         temp.clear();
     }
-
     //Combinam nodurile nemarcate
     ad.resize(nr_stari);
     for(auto& i : check)
@@ -428,15 +430,13 @@ void DFA_DFAmin()
 int main()
 {
     citire();
-    afisare();
-    g << '\n' << '\n';
     lNFA_NFA();
     afisare();
     g << '\n' << '\n';
     NFA_DFA();
     afisare();
     g << '\n' << '\n';
-    //DFA_DFAmin();
-    //afisare();
+    DFA_DFAmin();
+    afisare();
     return 0;
 }
